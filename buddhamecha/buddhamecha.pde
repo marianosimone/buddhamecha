@@ -8,7 +8,7 @@ int background_height = 400;
 
 void setup() {
   size(width, height);
-  background(120);
+  background(0);
   rectMode(CENTER);
   s = loadShape("buddha.svg");
   s.disableStyle();  // Ignore the colors in the SVG
@@ -34,11 +34,13 @@ void mouseDragged() {
   strokeWeight(lineWidth);
 
   line(pmouseX, pmouseY,mouseX, mouseY);
-  shape(s, (width/2.0)-(background_width/2.0), (height/2.0)-(background_height/2.0), background_width, background_height);
-  
+  shape(s, (width/2.0)-(background_width/2.0), (height/2.0)-(background_height/2.0), background_width, background_height);  
 }
 
 void mouseReleased() {
   println("mouse released");
 }
 
+void mousePressed() {
+  println("mouse pressed");
+}
