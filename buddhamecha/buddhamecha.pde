@@ -77,7 +77,7 @@ void setup() {
   minim = new Minim(this);
   background_music = new MusicController(new String[]{ "dong.wav"/*, "chun.wav","qiu.wav", "xia.wav"*/}, true);
   background_music.play();
-  bell = minim.loadSample("15401__djgriffin__tibetan-bell.wav", 512);
+  bell = minim.loadSample("bell.wav", 512);
   ac = new AudioContext();
   g = new Gain(ac, 1, 0.5);
 
@@ -131,7 +131,7 @@ void mouseDragged() {
 void mouseClicked() {
   dragging = true;
   
-  String sourceFile = dataPath("15401__djgriffin__tibetan-bell.wav");
+  String sourceFile = dataPath("k.ogg");
   try{
     SamplePlayer sp = new SamplePlayer(ac, new Sample(sourceFile));
     sp.setRate(new Glide(ac, int(random(0,100))));
