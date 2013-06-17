@@ -4,13 +4,12 @@ import ddf.minim.*;
 
 PShape buddha_shape;
 PShape lotus_shape;
-int width = 800;
-int height = 450;
+int width;
+int height;
 int background_width = 280;
 int background_height = 400;
 
 Minim minim;
-AudioSample bell;
 AudioContext ac;
 Gain g;
 
@@ -68,6 +67,8 @@ class MusicController {
 MusicController background_music;
 
 void setup() {
+  width = displayWidth;
+  height =displayHeight;
   size(width, height);
   background(0);
   rectMode(CENTER);
@@ -78,7 +79,6 @@ void setup() {
   minim = new Minim(this);
   background_music = new MusicController(new String[]{"chun.mp3", "dong.mp3","qiu.mp3", "xia.mp3"}, true);
   background_music.play();
-  bell = minim.loadSample("bell.wav", 512);
   ac = new AudioContext();
   g = new Gain(ac, 1, 0.5);
 
@@ -112,7 +112,6 @@ void draw() {
   rect(width/2, height/2, width, height);
   buddha();
   int sample = background_music.getSample();
-  println(sample);
   if (sample > 5) {
     lotus(int(random(0, width)), int(random(0, height)), sample);
   }
