@@ -1,3 +1,6 @@
+import beads.*;
+import ddf.minim.*;
+
 PShape buddha_shape;
 PShape lotus_shape;
 int width = 800;
@@ -5,6 +8,10 @@ int height = 450;
 int background_width = 280;
 int background_height = 400;
 Maxim maxim;
+Minim minim;
+AudioSample bell;
+AudioContext ac;
+Gain g;
 
 class MusicController {
   int current_player = 0;
@@ -38,10 +45,15 @@ class MusicController {
     return current_player().getSample();
   }
 
+  void stop() {
+    for (AudioPlayer player: players) {
+     // player.close();
+    }
+  }
   void change() {
-    //if (this.looping) {
+    if (this.looping) {
       current_player().stop();
-    //}
+    }
     if (current_player+1 < players.length) {
       current_player += 1;
     } else {
@@ -52,7 +64,6 @@ class MusicController {
 }
 
 MusicController background_music;
-MusicController effects;
 
 void setup() {
   size(width, height);
@@ -63,14 +74,28 @@ void setup() {
   lotus_shape = loadShape("lotus.svg");
   lotus_shape.disableStyle();  // Ignore the colors in the SVG
   maxim = new Maxim(this);
+  minim = new Minim(this);
   background_music = new MusicController(new String[]{ "dong.wav"/*, "chun.wav","qiu.wav", "xia.wav"*/}, true);
   background_music.play();
-  effects = new MusicController(new String[]{ "15401__djgriffin__tibetan-bell.wav"}, false);
+  bell = minim.loadSample("15401__djgriffin__tibetan-bell.wav", 512);
+  ac = new AudioContext();
+  g = new Gain(ac, 1, 0.5);
+
+  ac.out.addInput(g);
+  ac.start();
 }
 
-void lotus(int mouseX, int mouseY) {
+void stop() {
+  background_music.stop();
+  minim.stop();
+  super.stop();
+}
+
+color[] colors = new color[] {#EBC51C, #213CB1, #D80913, #FFFFFF, #E35604};
+void lotus(int x, int y, int intensity) {
     int size = int(random(10,70));
-    shape(lotus_shape, mouseX, mouseY, size, size);
+    stroke(colors[int(random(0, colors.length))], int(random(100,255)));
+    shape(lotus_shape, x, y, size, size);
 }
 
 void buddha() {
@@ -87,31 +112,35 @@ void draw() {
   buddha();
   short sample = background_music.getSample();
   if (sample > 500) {
-    stroke(map(sample, 0, 1500, 0, 255), map(sample, 0, 1500, 0, 255), map(sample, 0, 1500, 0, 255), 255);
-    lotus(int(random(0, width)), int(random(0, height)));
+    lotus(int(random(0, width)), int(random(0, height)), sample);
   }
 }
 
-void mouseDragged() {
-  float red = map(mouseX, 0, width, 0, 255);
-  float blue = map(mouseY, 0, width, 0, 255);
-  float green = dist(mouseX,mouseY,width/2,height/2);
-
-  float speed = dist(pmouseX, pmouseY, mouseX, mouseY);
-  float alpha = map(speed, 0, 20, 0, 10);
-  float lineWidth = map(speed, 0, 10, 10, 1);
-  lineWidth = constrain(lineWidth, 0, 10);
-
-  stroke(red, green, blue, 255);
-  strokeWeight(lineWidth);
-
-  lotus(mouseX, mouseY);
+boolean dragging = false;
+void mouseReleased() {
+ dragging = false; 
 }
 
-void mouseMoved() {
-  //controller.speed((float)map(mouseY, 0, height, 1, 3));
+void mouseDragged() {
+  if (!dragging) {
+    background_music.change();
+    dragging = false;
+  }
 }
 
 void mouseClicked() {
-  effects.change();
+  dragging = true;
+  
+  String sourceFile = dataPath("15401__djgriffin__tibetan-bell.wav");
+  try{
+    SamplePlayer sp = new SamplePlayer(ac, new Sample(sourceFile));
+    sp.setRate(new Glide(ac, int(random(0,100))));
+    sp.setKillOnEnd(true);
+    g.addInput(sp);
+    sp.start();
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+  //bell.setGain(random(0,255));
+  //bell.trigger();
 }
