@@ -23,8 +23,8 @@ class MusicController {
     transformations = new ddf.minim.analysis.FFT[files.length];
     int i = 0;
     for (String file: files) {
-      players[i] = minim.loadFile(file, 1024);
-      players[i].loop();
+      players[i] = minim.loadFile(file, 1024*8);
+      //players[i].loop();
       transformations[i] = new ddf.minim.analysis.FFT(players[i].bufferSize(), players[i].sampleRate());
       i += 1;
     }
@@ -77,7 +77,7 @@ void setup() {
   lotus_shape = loadShape("lotus.svg");
   lotus_shape.disableStyle();  // Ignore the colors in the SVG
   minim = new Minim(this);
-  background_music = new MusicController(new String[]{"chun.mp3", "dong.mp3","qiu.mp3", "xia.mp3"}, true);
+  background_music = new MusicController(new String[]{"dong.mp3", "chun.mp3", "qiu.mp3", "xia.mp3"}, true);
   background_music.play();
   ac = new AudioContext();
   g = new Gain(ac, 1, 0.5);
@@ -108,34 +108,24 @@ void buddha() {
 
 void draw() {
   noStroke();
-  fill(0, 7.0);
+  fill(0.0, 15.0);
   rect(width/2, height/2, width, height);
   buddha();
   int sample = background_music.getSample();
-  if (sample > 5) {
+  if (sample > 80) {
     lotus(int(random(0, width)), int(random(0, height)), sample);
   }
 }
 
-boolean dragging = false;
-void mouseReleased() {
- dragging = false; 
-}
-
-void mouseDragged() {
-  if (!dragging) {
-    background_music.change();
-    dragging = false;
-  }
+void keyTyped() {
+  background_music.change();
 }
 
 void mouseClicked() {
-  dragging = true;
-  
   String sourceFile = dataPath("bell.wav");
   try{
     SamplePlayer sp = new SamplePlayer(ac, new Sample(sourceFile));
-    sp.setRate(new Glide(ac, int(random(0,100))));
+    //sp.setRate(new Glide(ac, int(random(0,100))));
     sp.setKillOnEnd(true);
     g.addInput(sp);
     sp.start();
