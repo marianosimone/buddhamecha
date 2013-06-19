@@ -1,14 +1,15 @@
 import ddf.minim.analysis.*;
 import ddf.minim.*;
-
-Minim minim;
+import beads.*;
 
 class MusicController {
+  Minim minim;
   int current_player = 0;
   AudioPlayer[] players;
   ddf.minim.analysis.FFT[] transformations;
 
-  MusicController(String[] files, boolean looping) {
+  MusicController(String[] files, Minim minim) {
+    this.minim = minim;
     players = new AudioPlayer[files.length];
     transformations = new ddf.minim.analysis.FFT[files.length];
     int i = 0;
@@ -42,6 +43,7 @@ class MusicController {
     for (AudioPlayer player: players) {
       player.close();
     }
+    minim.stop();
   }
 
   void change() {
@@ -55,3 +57,37 @@ class MusicController {
   }
 }
 
+class EffectPlayer {
+  AudioContext ac;
+  SamplePlayer sp;
+  OnePoleFilter filter;
+  Glide gainValue;
+
+  EffectPlayer(final String path) {
+    ac = new AudioContext(); // create our AudioContext
+    try {  
+      sp = new SamplePlayer(ac, new Sample(path));
+    }
+    catch(Exception e) {
+      println("Exception while attempting to load sample!");
+      e.printStackTrace(); // then print a technical description of the error
+    }
+    sp.setKillOnEnd(false);
+
+    filter = new OnePoleFilter(ac, 200.0); // set up our new filter with a cutoff frequency of 200Hz
+    filter.addInput(sp); // connect the SamplePlayer to the filter
+
+    gainValue = new Glide(ac, 0.0, 20);
+    Gain g = new Gain(ac, 1, gainValue);
+    g.addInput(filter); // connect the filter to the gain
+    ac.out.addInput(g); // connect the Gain to the AudioContext
+    ac.start(); // begin audio processing
+  }
+
+  void play(float value) {
+    filter.setFrequency(20000.0); // set the filter frequency to cutoff at 20kHz -> the top of human hearing
+    gainValue.setValue(value);
+    sp.setToLoopStart(); // move the playback pointer to the first loop point (0.0)
+    sp.start();
+  }
+}

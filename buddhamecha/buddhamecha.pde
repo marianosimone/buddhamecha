@@ -1,4 +1,4 @@
-import beads.*;
+
 
 PShape buddha_shape;
 PShape lotus_shape;
@@ -6,16 +6,15 @@ int width;
 int height;
 int background_width = 280;
 int background_height = 400;
-
-AudioContext ac;
-Gain g;
-
+float maxDistance;
 
 MusicController background_music;
+EffectPlayer bell;
 
 void setup() {
-  width = 900;//displayWidth;
-  height = 400;//displayHeight;
+  width = displayWidth;
+  height = displayHeight;
+  maxDistance = (float)Math.floor(Math.sqrt(Math.pow(width/2, 2) + Math.pow(height/2, 2)));
   size(width, height);
   background(0);
   rectMode(CENTER);
@@ -23,19 +22,13 @@ void setup() {
   buddha_shape.disableStyle();  // Ignore the colors in the SVG
   lotus_shape = loadShape("lotus.svg");
   lotus_shape.disableStyle();  // Ignore the colors in the SVG
-  minim = new Minim(this);
-  background_music = new MusicController(new String[]{"dong.mp3", "chun.mp3", "qiu.mp3", "xia.mp3"}, true);
+  background_music = new MusicController(new String[]{"dong.mp3", "chun.mp3", "qiu.mp3", "xia.mp3"}, new Minim(this));
+  bell = new EffectPlayer(dataPath("bell.wav"));
   background_music.play();
-  ac = new AudioContext();
-  g = new Gain(ac, 1, 0.5);
-
-  ac.out.addInput(g);
-  ac.start();
 }
 
 void stop() {
   background_music.stop();
-  minim.stop();
   super.stop();
 }
 
@@ -64,22 +57,20 @@ void draw() {
   }
 }
 
+/**
+ * Change the background music if hitting the spacebar
+**/
 void keyPressed() {
   if (int(key) == 32) {
     background_music.change();
   }
 }
 
+float distanceToCenter() {
+ return (float)Math.floor(Math.sqrt(Math.pow(mouseX - width/2, 2) + Math.pow(mouseY - height/2, 2))); 
+}
 void mouseClicked() {
-  String sourceFile = dataPath("bell.wav");
-  try{
-    SamplePlayer sp = new SamplePlayer(ac, new Sample(sourceFile));
-    //sp.setRate(new Glide(ac, int(random(0,100))));
-    sp.setKillOnEnd(true);
-    g.addInput(sp);
-    sp.start();
-  } catch (Exception e) {
-    e.printStackTrace();
-  }
+  float volume = map(distanceToCenter(), 0.0, maxDistance, 2.0, 0.0);
+  bell.play(volume);
 }
 
