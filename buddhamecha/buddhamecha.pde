@@ -1,6 +1,4 @@
 import beads.*;
-import ddf.minim.analysis.*;
-import ddf.minim.*;
 
 PShape buddha_shape;
 PShape lotus_shape;
@@ -9,66 +7,15 @@ int height;
 int background_width = 280;
 int background_height = 400;
 
-Minim minim;
 AudioContext ac;
 Gain g;
 
-class MusicController {
-  int current_player = 0;
-  AudioPlayer[] players;
-  ddf.minim.analysis.FFT[] transformations;
-
-  MusicController(String[] files, boolean looping) {
-    players = new AudioPlayer[files.length];
-    transformations = new ddf.minim.analysis.FFT[files.length];
-    int i = 0;
-    for (String file: files) {
-      players[i] = minim.loadFile(file, 1024*8);
-      //players[i].loop();
-      transformations[i] = new ddf.minim.analysis.FFT(players[i].bufferSize(), players[i].sampleRate());
-      i += 1;
-    }
-  }
-
-  AudioPlayer current_player() {
-    return players[current_player];
-  }
-
-  void play() {
-    current_player().play(); 
-  }
-
-  int getSample() {
-    ddf.minim.analysis.FFT fft = transformations[current_player];
-    fft.forward(current_player().mix);
-    int total = 0;
-    for(int i = 0; i < fft.specSize(); i++) {
-      total += fft.getBand(i);
-    }
-    return total;
-  }
-
-  void stop() {
-    for (AudioPlayer player: players) {
-      player.close();
-    }
-  }
-  void change() {
-    current_player().pause();
-    if (current_player+1 < players.length) {
-      current_player += 1;
-    } else {
-      current_player = 0;
-    }
-    play();
-  }
-}
 
 MusicController background_music;
 
 void setup() {
-  width = displayWidth;
-  height =displayHeight;
+  width = 900;//displayWidth;
+  height = 400;//displayHeight;
   size(width, height);
   background(0);
   rectMode(CENTER);
@@ -117,8 +64,10 @@ void draw() {
   }
 }
 
-void keyTyped() {
-  background_music.change();
+void keyPressed() {
+  if (int(key) == 32) {
+    background_music.change();
+  }
 }
 
 void mouseClicked() {
