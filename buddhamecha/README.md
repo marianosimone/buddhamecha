@@ -2,7 +2,11 @@
 
 Based on [Buddha Machine](http://www.fm3buddhamachine.com) by FM3
 
-# Art
+## Requirements
+
+- [Beads](http://www.beadsproject.net), a software library written in Java for realtime audio
+
+## Art
 
 - All music by [FM3](http://www.fm3.com.cn/)
 - Bell effect is [Tibetan Bell](http://www.freesound.org/people/djgriffin/sounds/15401/), by djgriffin
