@@ -14,7 +14,7 @@ EffectPlayer bell;
 void setup() {
   width = displayWidth;
   height = displayHeight;
-  maxDistance = (float)Math.floor(Math.sqrt(Math.pow(width/2, 2) + Math.pow(height/2, 2)));
+  maxDistance = dist(width/2, height/2, 0, 0);
   size(width, height);
   background(0);
   rectMode(CENTER);
@@ -67,7 +67,7 @@ void keyPressed() {
 }
 
 float distanceToCenter() {
- return (float)Math.floor(Math.sqrt(Math.pow(mouseX - width/2, 2) + Math.pow(mouseY - height/2, 2))); 
+ return dist(mouseX, mouseY, width/2, height/2); 
 }
 void mouseClicked() {
   float volume = map(distanceToCenter(), 0.0, maxDistance, 2.0, 0.0);
