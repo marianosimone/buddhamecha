@@ -1,17 +1,19 @@
 import ddf.minim.analysis.*;
 import ddf.minim.*;
 import beads.*;
-
+import java.io.File;
+  
 class MusicController {
   Minim minim;
   int current_player = 0;
   AudioPlayer[] players;
   ddf.minim.analysis.FFT[] transformations;
 
-  MusicController(String[] files, Minim minim) {
+  MusicController(String directory, Minim minim) {
     this.minim = minim;
-    players = new AudioPlayer[files.length];
-    transformations = new ddf.minim.analysis.FFT[files.length];
+    StringList files = getFiles(directory);
+    players = new AudioPlayer[files.size()];
+    transformations = new ddf.minim.analysis.FFT[files.size()];
     int i = 0;
     for (String file: files) {
       players[i] = minim.loadFile(file, 1024*4);
@@ -54,6 +56,19 @@ class MusicController {
       current_player = 0;
     }
     play();
+  }
+
+  StringList getFiles(String dirPath) {
+    File dir = new File(dirPath);
+    File[] files = dir.listFiles();
+    StringList music =  new StringList();
+    for( int i=0; i < files.length; i++ ){ 
+      String path = files[i].getAbsolutePath();
+      if( path.toLowerCase().endsWith(".mp3") ) {
+        music.append(path);
+      }
+    }
+    return music;
   }
 }
 

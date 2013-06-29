@@ -22,7 +22,7 @@ void setup() {
   buddha_shape.disableStyle();  // Ignore the colors in the SVG
   lotus_shape = loadShape("lotus.svg");
   lotus_shape.disableStyle();  // Ignore the colors in the SVG
-  background_music = new MusicController(new String[]{"dong.mp3", "chun.mp3", "qiu.mp3", "xia.mp3"}, new Minim(this));
+  background_music = new MusicController(dataPath("fm3/chanfang"), new Minim(this));
   bell = new EffectPlayer(dataPath("bell.wav"));
   background_music.play();
 }
