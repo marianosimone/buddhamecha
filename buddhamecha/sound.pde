@@ -1,23 +1,24 @@
-import ddf.minim.analysis.*;
-import ddf.minim.*;
+//import ddf.minim.analysis.*;
+//import ddf.minim.*;
 import beads.*;
 import java.io.File;
   
 class MusicController {
-  Minim minim;
+  Maxim maxim;
   int current_player = 0;
   AudioPlayer[] players;
-  ddf.minim.analysis.FFT[] transformations;
+  //ddf.minim.analysis.FFT[] transformations;
 
-  MusicController(String directory, Minim minim) {
-    this.minim = minim;
+  MusicController(String directory, Maxim maxim) {
+    this.maxim = maxim;
     StringList files = getFiles(directory);
     players = new AudioPlayer[files.size()];
-    transformations = new ddf.minim.analysis.FFT[files.size()];
+    //transformations = new ddf.minim.analysis.FFT[files.size()];
     int i = 0;
     for (String file: files) {
-      players[i] = minim.loadFile(file, 1024*4);
-      transformations[i] = new ddf.minim.analysis.FFT(players[i].bufferSize(), players[i].sampleRate());
+      players[i] = maxim.loadFile(file);
+      players[i].setLooping(true);
+      //transformations[i] = new ddf.minim.analysis.FFT(players[i].bufferSize(), players[i].sampleRate());
       i += 1;
     }
   }
@@ -28,28 +29,33 @@ class MusicController {
 
   void play() {
     current_player().cue(0);
-    current_player().loop(); 
+    current_player().setAnalysing(true);
+    current_player().play(); 
   }
 
-  int getSample() {
-    ddf.minim.analysis.FFT fft = transformations[current_player];
+  float getSample() {
+    return current_player().getAveragePower();
+    /*ddf.minim.analysis.FFT fft = transformations[current_player];
     fft.forward(current_player().mix);
-    int total = 0;
+    float total = 0.0;
     for(int i = 0; i < fft.specSize(); i++) {
       total += fft.getBand(i);
     }
-    return total;
+    return total/fft.specSize();
+    */
   }
 
   void stop() {
-    for (AudioPlayer player: players) {
-      player.close();
+    /*for (AudioPlayer player: players) {
+      player.stop();
     }
-    minim.stop();
+    maxim.stop();
+    */
   }
 
   void change() {
-    current_player().pause();
+    current_player().stop();
+    current_player().setAnalysing(false);
     if (current_player+1 < players.length) {
       current_player += 1;
     } else {
@@ -64,7 +70,7 @@ class MusicController {
     StringList music =  new StringList();
     for( int i=0; i < files.length; i++ ){ 
       String path = files[i].getAbsolutePath();
-      if( path.toLowerCase().endsWith(".mp3") ) {
+      if( path.toLowerCase().endsWith(".wav") ) {
         music.append(path);
       }
     }
