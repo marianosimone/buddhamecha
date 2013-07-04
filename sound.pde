@@ -1,5 +1,3 @@
-//import ddf.minim.analysis.*;
-//import ddf.minim.*;
 import beads.*;
 import java.io.File;
   
@@ -13,12 +11,10 @@ class MusicController {
     this.maxim = maxim;
     StringList files = getFiles(directory);
     players = new AudioPlayer[files.size()];
-    //transformations = new ddf.minim.analysis.FFT[files.size()];
     int i = 0;
     for (String file: files) {
       players[i] = maxim.loadFile(file);
       players[i].setLooping(true);
-      //transformations[i] = new ddf.minim.analysis.FFT(players[i].bufferSize(), players[i].sampleRate());
       i += 1;
     }
   }
@@ -35,22 +31,6 @@ class MusicController {
 
   float getSample() {
     return current_player().getAveragePower();
-    /*ddf.minim.analysis.FFT fft = transformations[current_player];
-    fft.forward(current_player().mix);
-    float total = 0.0;
-    for(int i = 0; i < fft.specSize(); i++) {
-      total += fft.getBand(i);
-    }
-    return total/fft.specSize();
-    */
-  }
-
-  void stop() {
-    /*for (AudioPlayer player: players) {
-      player.stop();
-    }
-    maxim.stop();
-    */
   }
 
   void change() {

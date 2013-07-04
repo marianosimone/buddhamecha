@@ -1,5 +1,3 @@
-
-
 PShape buddha_shape;
 PShape lotus_shape;
 int width;
@@ -31,11 +29,6 @@ void setup() {
   background_music = new MusicController(dataPath("fm3/chanfang"), new Maxim(this));
   bell = new EffectPlayer(dataPath("bell.wav"));
   background_music.play();
-}
-
-void stop() {
-  background_music.stop();
-  super.stop();
 }
 
 color[] colors = new color[] {#EBC51C, #213CB1, #D80913, #FFFFFF, #E35604};
